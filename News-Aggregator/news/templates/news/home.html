@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWS MANIA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body.dark-mode {
+            background-color: #212529;
+            color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .navbar.dark-mode {
+            background-color: #343a40;
+            border-bottom: 1px solid #495057;
+        }
+        .dark-mode-toggle {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.8rem;
+            border: none;
+            background: none;
+            color: #007bff;
+            cursor: pointer;
+            transition: transform 0.3s, color 0.3s;
+        }
+        .dark-mode-toggle:hover {
+            transform: scale(1.2);
+            color: #0056b3;
+        }
+        .dark-mode-toggle.dark-mode {
+            color: #f8f9fa;
+        }
+        .button-48 {
+            appearance: none;
+            background-color: #FFFFFF;
+            border: 2px solid #007bff;
+            border-radius: 25px;
+            color: #000000;
+            cursor: pointer;
+            display: inline-block;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            line-height: 1em;
+            margin: 0 10px;
+            opacity: 1;
+            outline: 0;
+            padding: 0.8em 1.5em;
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: all 0.3s ease-in-out;
+            user-select: none;
+            touch-action: manipulation;
+            vertical-align: baseline;
+            white-space: nowrap;
+        }
+        .button-48:hover {
+            background-color: #007bff;
+            color: #000000; /* Ensure text remains black */
+            transform: scale(1.05);
+        }
+        .button-48:focus {
+            outline: none;
+            box-shadow: 0 0 5px #007bff;
+        }
+        .button-48 span {
+            z-index: 1;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <button id="dark-mode-toggle" class="dark-mode-toggle">
+                <i id="dark-mode-icon" class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+    <div class="container my-4">
+        <h1 class="text-center">NEWS MANIA</h1>
+        <div class="my-3">
+            <input type="text" id="search-bar" class="form-control" placeholder="Search articles...">
+            <ul id="search-results" class="list-group mt-2"></ul>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button class="button-48 category-tab" data-category="sports"><span class="text">Sports</span></button>
+            <button class="button-48 category-tab" data-category="entertainment"><span class="text">Entertainment</span></button>
+            <button class="button-48 category-tab" data-category="politics"><span class="text">Politics</span></button>
+            <button class="button-48 category-tab" data-category="opinion"><span class="text">Opinion</span></button>
+            <button class="button-48 category-tab" data-category="breaking-news"><span class="text">Breaking News</span></button>
+            <button class="button-48 category-tab" data-category="technology"><span class="text">Technology</span></button>
+            <button class="button-48 category-tab" data-category="health"><span class="text">Health</span></button>
+        </div>
+        <div id="articles-container" class="row mt-4">
+            {% for object in object_list %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{{ object.image|default:'https://via.placeholder.com/150' }}" class="card-img-top" alt="{{ object.title }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ object.title }}</h5>
+                        <a href="{{ object.url }}" target="_blank" class="btn btn-primary">Read More</a>
+                        <div class="mt-3 d-flex justify-content-around">
+                            <!-- Social Media Icons -->
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ object.url }}" target="_blank" class="text-primary">
+                                <i class="fab fa-facebook fa-lg"></i>
+                            </a>
+                            <a href="https://api.whatsapp.com/send?text={{ object.url }}" target="_blank" class="text-success">
+                                <i class="fab fa-whatsapp fa-lg"></i>
+                            </a>
+                            <a href="https://www.instagram.com/" target="_blank" class="text-danger">
+                                <i class="fab fa-instagram fa-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const darkModeToggle = document.getElementById("dark-mode-toggle");
+            const darkModeIcon = document.getElementById("dark-mode-icon");
+            const searchBar = document.getElementById("search-bar");
+            const searchResults = document.getElementById("search-results");
+            const categoryTabs = document.querySelectorAll(".category-tab");
+            const articlesContainer = document.getElementById("articles-container");
+
+            // Toggle dark mode
+            darkModeToggle.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                document.querySelector(".navbar").classList.toggle("dark-mode");
+                if (document.body.classList.contains("dark-mode")) {
+                    darkModeIcon.classList.replace("fa-moon", "fa-sun");
+                } else {
+                    darkModeIcon.classList.replace("fa-sun", "fa-moon");
+                }
+            });
+
+            // Fetch articles
+            const fetchArticles = (category) => {
+                fetch(`/scrape/${category}`)
+                    .then(() => {
+                        // Fetch articles from the database after scraping
+                        fetch("/")
+                            .then(response => response.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, "text/html");
+                                const newArticles = doc.querySelector("#articles-container").innerHTML;
+                                articlesContainer.innerHTML = newArticles;
+                            })
+                            .catch(error => console.error("Error fetching articles:", error));
+                    })
+                    .catch(error => console.error("Error scraping articles:", error));
+            };
+
+            // Handle category tab clicks
+            categoryTabs.forEach(tab => {
+                tab.addEventListener("click", event => {
+                    event.preventDefault();
+                    const category = tab.dataset.category;
+                    fetchArticles(category);
+                });
+            });
+
+            // Search functionality with suggestions
+            searchBar.addEventListener("input", () => {
+                const query = searchBar.value.trim();
+                if (query.length > 0) {
+                    fetch(`/search/?q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            searchResults.innerHTML = "";
+                            data.results.forEach(result => {
+                                const li = document.createElement("li");
+                                li.className = "list-group-item";
+                                li.innerHTML = `<a href="${result.url}" target="_blank">${result.title}</a>`;
+                                searchResults.appendChild(li);
+                            });
+                        })
+                        .catch(error => console.error("Error fetching search results:", error));
+                } else {
+                    searchResults.innerHTML = "";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
